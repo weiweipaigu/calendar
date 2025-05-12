@@ -95,12 +95,46 @@
     }
 
     @media screen and (max-width: 768px) {
-      .calendar-grid {
-        grid-template-columns: repeat(7, minmax(120px, 1fr));
+      html, body {
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+      }
+      .calendar-container {
         overflow-x: auto;
-        flex-wrap: nowrap;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(120px, 1fr));
+        gap: 10px;
         min-width: 840px;
       }
+      .calendar-grid::-webkit-scrollbar {
+        height: 6px;
+      }
+      .calendar-grid::-webkit-scrollbar-thumb {
+        background: #cfc7b2;
+        border-radius: 4px;
+      }
+      .calendar-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .event .tooltip {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: auto;
+        max-width: 90vw;
+        margin-top: 6px;
+        display: none;
+        word-break: break-word;
+        white-space: normal;
+      }
+    }
       .calendar-grid::-webkit-scrollbar {
         height: 6px;
       }
