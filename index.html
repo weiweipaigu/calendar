@@ -139,20 +139,26 @@
 
   <script>
     let eventsByDate = {};
+    let currentDate = new Date();
 
     fetch('events.json')
       .then(response => response.json())
       .then(data => {
         eventsByDate = data;
-        // renderCalendar 將由 fetch 成功後呼叫
-      });
-      });
-      });
+        renderWeekdays();
+        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      })
+      .catch(err => console.error('讀取 events.json 失敗:', err));
 
-    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-    let currentDate = new Date();
+    document.addEventListener('click', function(e) {
+      const isTooltipOrButton = e.target.closest('.tooltip') || e.target.classList.contains('toggle-btn');
+      if (!isTooltipOrButton) {
+        document.querySelectorAll('.tooltip').forEach(t => t.style.display = 'none');
+      }
+    });
 
     function renderWeekdays() {
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
       const weekdayContainer = document.getElementById('calendar-weekdays');
       weekdayContainer.innerHTML = '';
       weekdays.forEach(day => {
@@ -186,6 +192,7 @@
         const events = eventsByDate[dateStr];
         const div = document.createElement('div');
         div.className = 'day';
+
         const isToday = (year === new Date().getFullYear() && month === new Date().getMonth() && day === new Date().getDate());
         if (isToday) div.style.border = '3px solid #ff884d';
 
@@ -202,6 +209,7 @@
               if (hour < 12) icon = '☆';
               else if (hour >= 17) icon = '✪';
             }
+
             const entry = document.createElement('div');
             entry.className = 'event';
 
@@ -254,16 +262,6 @@
       currentDate.setMonth(currentDate.getMonth() + offset);
       renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
     }
-
-    document.addEventListener('click', function(e) {
-      const isTooltipOrButton = e.target.closest('.tooltip') || e.target.classList.contains('toggle-btn');
-      if (!isTooltipOrButton) {
-        document.querySelectorAll('.tooltip').forEach(t => t.style.display = 'none');
-      }
-    });
-
-    renderWeekdays();
-    renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
   </script>
 </body>
 </html>
