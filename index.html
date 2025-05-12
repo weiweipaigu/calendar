@@ -144,7 +144,8 @@
       .then(response => response.json())
       .then(data => {
         eventsByDate = data;
-        // 移除這行，避免 fetch 尚未完成就渲染空資料
+        // renderCalendar 將由 fetch 成功後呼叫
+      });
       });
       });
 
