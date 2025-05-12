@@ -144,7 +144,8 @@
       .then(response => response.json())
       .then(data => {
         eventsByDate = data;
-        // 初始不立即呼叫 renderCalendar，改為 fetch 完 events.json 後呼叫
+        // 移除這行，避免 fetch 尚未完成就渲染空資料
+      });
       });
 
     const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
@@ -184,6 +185,8 @@
         const events = eventsByDate[dateStr];
         const div = document.createElement('div');
         div.className = 'day';
+        const isToday = (year === new Date().getFullYear() && month === new Date().getMonth() && day === new Date().getDate());
+        if (isToday) div.style.border = '3px solid #ff884d';
 
         if (events) {
           const header = document.createElement('strong');
