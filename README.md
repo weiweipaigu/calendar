@@ -11,15 +11,3 @@
 - ※ 課表不會全部在上面，額滿或是網頁維護困難時我就會移除掉了。要約時間、許願課程開課請直接私訊我。
 
 👉 任何技術問題請洽「瑋瑋老師的撒野記事錄」Facebook 粉絲頁。
-
----
-
-## 📂 技術與部署
-
-- HTML + CSS + JavaScript
-- 支援手機與桌面裝置瀏覽
-- Google Fonts: Chocolate Classical Sans
-
-## 📄 授權 License
-
-MIT License
