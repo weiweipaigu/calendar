@@ -60,5 +60,29 @@
             "tooltip": "適齡五歲以上，需要有一點體力",
             "url": "https://www.beclass.com/rid=294ff9a682ef32100681"
         }
+    ],
+    "2025-08-18": [
+        {
+            "title": "高年級到國中生暑期營隊_三日不過夜",
+            "time": "09:00-17:00",
+            "tooltip": "收升五年級到國中應屆畢業生",
+            "url": "https://www.beclass.com/rid=294ffec68401204e90b4"
+        }
+    ],
+    "2025-08-19": [
+        {
+            "title": "高年級到國中生暑期營隊_三日不過夜",
+            "time": "09:00-17:00",
+            "tooltip": "收升五年級到國中應屆畢業生",
+            "url": "https://www.beclass.com/rid=294ffec68401204e90b4"
+        }
+    ],
+    "2025-08-20": [
+        {
+            "title": "高年級到國中生暑期營隊_三日不過夜",
+            "time": "14:00-21:30",
+            "tooltip": "收升五年級到國中應屆畢業生",
+            "url": "https://www.beclass.com/rid=294ffec68401204e90b4"
+        }
     ]
 }
