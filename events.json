@@ -105,10 +105,15 @@
     ],
     "2025-08-10": [
         {
-            "title": "仙跡岩步道 成人專班 上午班",
+            "title": "大溝溪步道 上午班",
             "time": "09:00-12:00",
-            "tooltip": "大人是一種心態 覺得自己是大人了就可以來哦",
-            "url": "https://www.beclass.com/rid=294fff9685045b6c83d7"
+            "tooltip": "適齡3歲以上親子團",
+            "url": "https://www.beclass.com/rid=30500696888e7897e73f"
+        },{
+            "title": "大溝溪步道 下午班",
+            "time": "14:00-16:00",
+            "tooltip": "適齡3歲以上親子團",
+            "url": "https://www.beclass.com/rid=30500696888e865e0e7e"
         }
     ]
 }
