@@ -20,19 +20,24 @@
             "url": "https://www.beclass.com/rid=305006568830204004ce"
         }
     ],
-    "2025-06-09": [
+    "2025-11-01": [
         {
-            "title": "士林區翠山步道 下午班",
+            "title": "北投區軍艦岩 上午班",
+            "time": "10:00-12:00",
+            "tooltip": "名額 2, 報名請私訊粉絲頁，適齡5歲以上",
+            "url": "https://www.facebook.com/weiweipaigu"
+        },{
+            "title": "北投區軍艦岩 下午班",
             "time": "14:00-16:00",
-            "tooltip": "名額 7, 報名請私訊粉絲頁",
+            "tooltip": "名額 1, 報名請私訊粉絲頁，適齡5歲以上",
             "url": "https://www.facebook.com/weiweipaigu"
         }
     ],
-    "2025-06-15": [
+    "2025-11-02": [
         {
-            "title": "新店區獅仔頭山步道 下午班",
+            "title": "新店區小粗坑步道 下午班",
             "time": "14:00-16:00",
-            "tooltip": "名額 6, 報名請私訊粉絲頁",
+            "tooltip": "名額 3, 報名請私訊粉絲頁",
             "url": "https://www.facebook.com/weiweipaigu"
         }
     ],
