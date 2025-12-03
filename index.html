@@ -12,11 +12,11 @@
       padding: 20px;
       background: #f3f0e7;
     }
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+    .calendar-header {␊
+      display: flex;␊
+      justify-content: space-between;␊
+      align-items: center;␊
+      margin-bottom: 10px;␊
       flex-wrap: wrap;
     }
     .calendar-header button {
@@ -30,15 +30,15 @@
     }
     .calendar-header button:hover {
       background-color: #89ac90;
-    }
-    .calendar-container {
-      overflow-x: auto;
-      height: 1200px;
-    }
-    .calendar-grid {
-      touch-action: pan-x pan-y;
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
+    }␊
+    .calendar-container {␊
+      overflow-x: auto;␊
+      height: auto;
+    }␊
+    .calendar-grid {␊
+      touch-action: pan-x pan-y;␊
+      display: grid;␊
+      grid-template-columns: repeat(7, 1fr);␊
       gap: 10px;
       min-width: 840px;
     }
@@ -57,6 +57,10 @@
       transform: scale(1.02);
       background-color: #33E6CC;
       transition: transform 0.1s ease-in-out, background-color 0.2s ease-in-out;
+    }
+    .day.selected {
+      border: 3px solid #ff884d;
+      box-shadow: 0 0 0 3px #ffe1ca;
     }
     .event {
       position: relative;
@@ -93,6 +97,58 @@
       padding: 5px 0;
       color: #4d5948;
       font-size: 16px;
+    }
+
+    .event-panel {
+      margin-top: 20px;
+      background: #ffffff;
+      border: 2px solid #cfc7b2;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    }
+    .event-panel h2 {
+      margin: 0 0 12px;
+      color: #4d3c2b;
+      font-size: 20px;
+    }
+    .event-list {
+      display: grid;
+      gap: 12px;
+    }
+    .event-card {
+      border: 1px solid #cfc7b2;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f9f5ec;
+    }
+    .event-card h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      color: #4d3c2b;
+    }
+    .event-card p {
+      margin: 4px 0;
+      color: #4d3c2b;
+      line-height: 1.5;
+    }
+    .event-card a {
+      color: #3b6d49;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .event-card .time-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #e2f0e5;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #335538;
+      margin-bottom: 6px;
+    }
+    .empty-message {
+      margin: 0;
+      color: #4d3c2b;
     }
 
     @media screen and (max-width: 768px) {
@@ -140,6 +196,16 @@
         word-break: break-word;
         white-space: normal;
       }
+
+      .event-panel {
+        padding: 14px;
+      }
+      .event-card h3 {
+        font-size: 16px;
+      }
+      .event-card .time-tag {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -156,9 +222,16 @@
     <div class="calendar-grid" id="calendar-days"></div>
   </div>
 
+  <section class="event-panel" aria-live="polite">
+    <h2 id="event-panel-title">點擊日期查看活動</h2>
+    <div class="event-list" id="event-list"></div>
+    <p class="empty-message" id="event-empty-message">尚未選擇日期</p>
+  </section>
+
   <script>
     let eventsByDate = {};
     let currentDate = new Date();
+    let selectedDate = null;
 
     fetch('events.json')
       .then(response => response.json())
@@ -166,6 +239,10 @@
         eventsByDate = data;
         renderWeekdays();
         renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        const todayStr = formatDateKey(new Date());
+        if (eventsByDate[todayStr]) {
+          showEvents(todayStr);
+        }
       })
       .catch(err => console.error('讀取 events.json 失敗:', err));
 
@@ -186,11 +263,11 @@
         div.textContent = day;
         weekdayContainer.appendChild(div);
       });
-    }
-
-    function renderCalendar(year, month) {
-      const calendarTitle = document.getElementById('calendar-title');
-      const calendarDays = document.getElementById('calendar-days');
+    }␊
+␊
+    function renderCalendar(year, month) {␊
+      const calendarTitle = document.getElementById('calendar-title');␊
+      const calendarDays = document.getElementById('calendar-days');␊
       calendarDays.innerHTML = '';
 
       const firstDay = new Date(year, month, 1);
@@ -211,9 +288,26 @@
         const events = eventsByDate[dateStr];
         const div = document.createElement('div');
         div.className = 'day';
+        div.dataset.date = dateStr;
+        div.setAttribute('role', 'button');
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('aria-label', `${month + 1}月${day}日`);
 
         const isToday = (year === new Date().getFullYear() && month === new Date().getMonth() && day === new Date().getDate());
-        if (isToday) div.style.border = '3px solid #ff884d';
+        if (isToday && selectedDate === null) {
+          div.classList.add('selected');
+        }
+        if (selectedDate === dateStr) {
+          div.classList.add('selected');
+        }
+
+        div.addEventListener('click', () => showEvents(dateStr));
+        div.addEventListener('keypress', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            showEvents(dateStr);
+          }
+        });
 
         if (events) {
           const header = document.createElement('strong');
@@ -264,12 +358,12 @@
           div.textContent = `${month + 1}/${day}`;
         }
 
-        calendarDays.appendChild(div);
-      }
-    }
-
-    function toggleTooltip(button) {
-      const allTooltips = document.querySelectorAll('.tooltip');
+        calendarDays.appendChild(div);␊
+      }␊
+    }␊
+␊
+    function toggleTooltip(button) {␊
+      const allTooltips = document.querySelectorAll('.tooltip');␊
       allTooltips.forEach(tip => tip.style.display = 'none');
       const tooltip = button.nextElementSibling;
       if (tooltip.style.display !== 'block') {
@@ -280,6 +374,73 @@
     function changeMonth(offset) {
       currentDate.setMonth(currentDate.getMonth() + offset);
       renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      selectedDate = null;
+      resetEventPanel();
+    }
+
+    function formatDateKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function formatDisplayDate(dateStr) {
+      const [year, month, day] = dateStr.split('-');
+      return `${year} 年 ${Number(month)} 月 ${Number(day)} 日 活動`;
+    }
+
+    function resetEventPanel() {
+      document.getElementById('event-panel-title').textContent = '點擊日期查看活動';
+      document.getElementById('event-list').innerHTML = '';
+      document.getElementById('event-empty-message').textContent = '尚未選擇日期';
+    }
+
+    function showEvents(dateStr) {
+      selectedDate = dateStr;
+      document.querySelectorAll('.day').forEach(dayEl => {
+        if (dayEl.dataset.date) {
+          dayEl.classList.toggle('selected', dayEl.dataset.date === dateStr);
+        }
+      });
+
+      const eventListEl = document.getElementById('event-list');
+      const emptyMessageEl = document.getElementById('event-empty-message');
+      const panelTitleEl = document.getElementById('event-panel-title');
+
+      const events = eventsByDate[dateStr];
+      panelTitleEl.textContent = formatDisplayDate(dateStr);
+      eventListEl.innerHTML = '';
+
+      if (!events || events.length === 0) {
+        emptyMessageEl.textContent = '此日期沒有活動，歡迎選擇其他日期';
+        return;
+      }
+
+      emptyMessageEl.textContent = '';
+      events.forEach(event => {
+        const card = document.createElement('div');
+        card.className = 'event-card';
+
+        const title = document.createElement('h3');
+        title.textContent = event.title;
+
+        const timeTag = document.createElement('div');
+        timeTag.className = 'time-tag';
+        timeTag.textContent = event.time;
+
+        const description = document.createElement('p');
+        description.innerHTML = event.tooltip.replace(/\n/g, '<br>');
+
+        const link = document.createElement('a');
+        link.href = event.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = '前往活動報名';
+
+        card.appendChild(title);
+        card.appendChild(timeTag);
+        card.appendChild(description);
+        card.appendChild(link);
+        eventListEl.appendChild(card);
+      });
     }
   </script>
 <div id="readme-popup" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#00000088;z-index:10000;display:flex;justify-content:center;align-items:center;">
