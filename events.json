@@ -225,7 +225,7 @@
     ],
     "2026-02-05": [
         {
-            "title": "歡迎洽談一日營隊",
+            "title": "歡迎洽談活動",
             "time": "09:00-17:00",
             "tooltip": "請私訊粉絲頁討論時間地點",
             "url": "https://www.facebook.com/weiweipaigu"
@@ -233,7 +233,7 @@
     ],
     "2026-02-06": [
         {
-            "title": "歡迎洽談一日營隊",
+            "title": "歡迎洽談活動",
             "time": "09:00-17:00",
             "tooltip": "請私訊粉絲頁討論時間地點",
             "url": "https://www.facebook.com/weiweipaigu"
@@ -241,7 +241,7 @@
     ],
     "2026-02-09": [
         {
-            "title": "歡迎洽談一日營隊",
+            "title": "歡迎洽談活動",
             "time": "09:00-17:00",
             "tooltip": "請私訊粉絲頁討論時間地點",
             "url": "https://www.facebook.com/weiweipaigu"
@@ -249,10 +249,31 @@
     ],
     "2026-02-10": [
         {
-            "title": "歡迎洽談一日營隊",
+            "title": "歡迎洽談活動",
             "time": "09:00-17:00",
             "tooltip": "請私訊粉絲頁討論時間地點",
             "url": "https://www.facebook.com/weiweipaigu"
+        }
+    ],
+     "2026-02-08": [
+        {
+            "title": "文山區-仙跡岩 親子活動",
+            "time": "10:00-12:00",
+            "tooltip": "適齡4歲以上，滿三歲即算正式成員喔",
+            "url": "https://www.beclass.com/rid=3052517696e02d2a15a8"
+        }
+    ],
+     "2026-02-07": [
+        {
+            "title": "內湖區-大溝溪親水園區 親子活動",
+            "time": "9:00-11:00",
+            "tooltip": "適齡3歲以上",
+            "url": "https://www.beclass.com/rid=3052517696e0236be325"
+        },{
+            "title": "內湖區-大溝溪親水園區 親子活動",
+            "time": "13:30-15:30",
+            "tooltip": "適齡3歲以上",
+            "url": "https://www.beclass.com/rid=3052517696e0199403a7"
         }
     ]
         
