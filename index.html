@@ -1,190 +1,380 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <link href="https://fonts.googleapis.com/css2?family=Chocolate+Classical+Sans&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>課表</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendar | 瑋瑋老師的撒野記事錄</title>
   <style>
-    body {
-      font-family: 'Chocolate Classical Sans', 'Segoe UI', cursive, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f3f0e7;
+    :root {
+      --bg: #f7f5ef;
+      --card: #ffffff;
+      --text: #2f3a33;
+      --muted: #66756b;
+      --line: #dfe6df;
+      --accent: #5d7a67;
+      --accent-soft: #e8efe8;
+      --highlight: #f4ede0;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+      --max: 1100px;
+      --radius: 18px;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .wrap {
+      width: min(92%, var(--max));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(247, 245, 239, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .menu {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .hero {
+      padding: 56px 0 24px;
+    }
+
+    .hero-box {
+      background: linear-gradient(135deg, #eef4ee, #fbfaf6);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 34px 28px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.25;
+      margin: 0 0 14px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    .lead {
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 1.03rem;
+    }
+
+    .note {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      font-size: 0.92rem;
+    }
+
+    .calendar-section {
+      padding: 8px 0 24px;
+    }
+
     .calendar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      gap: 16px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
+
+    .calendar-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .calendar-header button {
-      padding: 6px 14px;
-      font-size: 16px;
-      background-color: #a4c2a8;
-      border: none;
-      border-radius: 8px;
-      color: #4d3c2b;
+      padding: 10px 16px;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      color: #ffffff;
       cursor: pointer;
+      transition: opacity 0.2s ease;
     }
+
     .calendar-header button:hover {
-      background-color: #89ac90;
+      opacity: 0.9;
     }
+
+    .calendar-title {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      margin: 0;
+    }
+
+    .calendar-shell {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
     .calendar-container {
       overflow-x: auto;
-      height: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
     }
+
     .calendar-grid {
-      touch-action: pan-x pan-y;
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(7, minmax(120px, 1fr));
       gap: 10px;
-      min-width: 840px;
+      min-width: 860px;
     }
+
+    .weekday {
+      text-align: center;
+      font-weight: 700;
+      padding: 8px 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
     .day {
       background: #ffffff;
-      padding: 10px;
-      border: 2px solid #cfc7b2;
-      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
       position: relative;
-      min-height: 80px;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-      transition: transform 0.1s ease-in-out;
+      min-height: 110px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+      transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
       overflow: visible;
     }
+
     .day:hover {
-      transform: scale(1.02);
-      background-color: #33E6CC;
-      transition: transform 0.1s ease-in-out, background-color 0.2s ease-in-out;
+      transform: translateY(-2px);
+      background-color: #fcfcf8;
+      border-color: #cfdacf;
     }
+
     .day.selected {
-      border: 3px solid #ff884d;
-      box-shadow: 0 0 0 3px #ffe1ca;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px #e8efe8;
     }
+
+    .day.empty {
+      background: transparent;
+      box-shadow: none;
+      border: 1px dashed transparent;
+    }
+
+    .day-number {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
     .event {
       position: relative;
       cursor: pointer;
+      margin-bottom: 8px;
     }
-    .event .tooltip {
-      display: none;
-      position: absolute;
-      top: 24px;
-      left: 0;
-      background: #f5e0c7;
-      color: #4d3c2b;
-      padding: 8px;
-      border-radius: 8px;
-      z-index: 10001;
-      width: 200px;
-      white-space: normal;
+
+    .event-title {
+      color: var(--text);
+      text-decoration: underline;
+      cursor: pointer;
+      word-break: break-word;
     }
-    .event:hover .tooltip {
-      display: block;
-    }
+
     .event .toggle-btn {
       margin-top: 4px;
+      padding: 0;
       font-size: 12px;
       background: none;
       border: none;
-      color: #4d3c2b;
+      color: var(--muted);
       text-decoration: underline;
       cursor: pointer;
     }
-    .weekday {
-      text-align: center;
-      font-weight: bold;
-      padding: 5px 0;
-      color: #4d5948;
-      font-size: 16px;
+
+    .event .tooltip {
+      display: none;
+      position: absolute;
+      top: 26px;
+      left: 0;
+      background: #fff8ef;
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #eadfcb;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      z-index: 10001;
+      width: 230px;
+      white-space: normal;
+      line-height: 1.6;
     }
 
     .event-panel {
       margin-top: 20px;
-      background: #ffffff;
-      border: 2px solid #cfc7b2;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
     }
+
     .event-panel h2 {
       margin: 0 0 12px;
-      color: #4d3c2b;
-      font-size: 20px;
+      font-size: 1.35rem;
     }
+
     .event-list {
       display: grid;
       gap: 12px;
     }
+
     .event-card {
-      border: 1px solid #cfc7b2;
-      border-radius: 12px;
-      padding: 12px;
-      background: #f9f5ec;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfbf8;
     }
+
     .event-card h3 {
-      margin: 0 0 4px;
-      font-size: 18px;
-      color: #4d3c2b;
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+      color: var(--text);
     }
+
     .event-card p {
-      margin: 4px 0;
-      color: #4d3c2b;
-      line-height: 1.5;
+      margin: 6px 0;
+      color: var(--text);
+      line-height: 1.6;
     }
+
     .event-card a {
-      color: #3b6d49;
+      color: var(--accent);
       text-decoration: underline;
       font-weight: 600;
     }
-    .event-card .time-tag {
+
+    .time-tag {
       display: inline-block;
-      padding: 2px 8px;
-      background: #e2f0e5;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 4px 10px;
+      background: var(--accent-soft);
+      border-radius: 999px;
+      font-size: 0.88rem;
       color: #335538;
-      margin-bottom: 6px;
-    }
-    .empty-message {
-      margin: 0;
-      color: #4d3c2b;
+      margin-bottom: 8px;
     }
 
-    @media screen and (max-width: 768px) {
-      body {
-        height: 100%;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      html, body {
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-x pan-y;
-      }
-      .calendar-container {
-        overflow-x: auto;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(240px, 1fr));
-        gap: 10px;
-        min-width: 1680px;
-      }
-      .calendar-grid::-webkit-scrollbar {
-        height: 6px;
-      }
-      .calendar-grid::-webkit-scrollbar-thumb {
-        background: #cfc7b2;
-        border-radius: 4px;
-      }
+    .empty-message {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .popup-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .popup-card {
+      background: #fff8ef;
+      padding: 22px 22px 18px;
+      border-radius: 18px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+      color: var(--text);
+      position: relative;
+      border: 1px solid #eadfcb;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 20px 0 48px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-inner,
       .calendar-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
       }
+
+      .hero-box,
+      .event-panel,
+      .calendar-shell {
+        padding: 20px;
+      }
+
+      .calendar-grid {
+        grid-template-columns: repeat(7, minmax(220px, 1fr));
+        min-width: 1540px;
+      }
+
       .event .tooltip {
         position: relative;
         top: auto;
@@ -192,51 +382,74 @@
         width: auto;
         max-width: 90vw;
         margin-top: 6px;
-        display: none;
-        word-break: break-word;
-        white-space: normal;
-      }
-
-      .event-panel {
-        padding: 14px;
-      }
-      .event-card h3 {
-        font-size: 16px;
-      }
-      .event-card .time-tag {
-        font-size: 13px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="calendar-header">
-    <div>
-      <button onclick="changeMonth(-1)" aria-label="上一月">&lt; 上月</button>
-      <button onclick="changeMonth(1)" aria-label="下一月">下月 &gt;</button>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">瑋瑋老師的撒野記事錄</div>
+      <div class="menu">
+        <a href="https://weiweipaigu.github.io/home/">Home</a>
+        <a href="https://weiweipaigu.github.io/calendar/">Calendar</a>
+        <a href="https://weiweipaigu.github.io/shopping/">Shopping</a>
+      </div>
     </div>
-    <h1 id="calendar-title"></h1>
-  </div>
-  <div class="calendar-container">
-    <div class="calendar-grid" id="calendar-weekdays"></div>
-    <div class="calendar-grid" id="calendar-days"></div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-box">
+        <h1>行事曆 / Calendar</h1>
+        <p class="lead">這裡整理近期課程、活動與導覽資訊。點選日期可查看當日活動，若有報名連結也會顯示在下方資訊卡中。</p>
+        <div class="note">☆ 上午活動　★ 下午活動　✪ 夜間活動</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="calendar-section">
+      <div class="wrap">
+        <div class="calendar-header">
+          <div class="calendar-controls">
+            <button onclick="changeMonth(-1)" aria-label="上一月">&lt; 上月</button>
+            <button onclick="changeMonth(1)" aria-label="下一月">下月 &gt;</button>
+          </div>
+          <h2 class="calendar-title" id="calendar-title"></h2>
+        </div>
+
+        <div class="calendar-shell">
+          <div class="calendar-container">
+            <div class="calendar-grid" id="calendar-weekdays"></div>
+            <div class="calendar-grid" id="calendar-days"></div>
+          </div>
+        </div>
+
+        <section class="event-panel" aria-live="polite">
+          <h2 id="event-panel-title">點擊日期查看活動</h2>
+          <div class="event-list" id="event-list"></div>
+          <p class="empty-message" id="event-empty-message">尚未選擇日期</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="readme-popup" class="popup-backdrop">
+    <div class="popup-card">
+      <button class="popup-close" onclick="document.getElementById('readme-popup').style.display='none'">×</button>
+      <p>※ 點擊課程 title，會跳到報名連結；如果跳回粉絲頁，請直接私訊我報名。</p>
+      <p>※ ☆ 代表上午活動、★ 代表下午活動、✪ 代表夜間活動。</p>
+      <p>※ 課表不會全部列在上面；若額滿或頁面需要整理，我會先移除活動內容。</p>
+      <p>👉 技術問題或課程洽詢，請至「瑋瑋老師的撒野記事錄」Facebook 粉絲頁。</p>
+    </div>
   </div>
 
-  <section class="event-panel" aria-live="polite">
-    <h2 id="event-panel-title">點擊日期查看活動</h2>
-    <div class="event-list" id="event-list"></div>
-    <p class="empty-message" id="event-empty-message">尚未選擇日期</p>
-  </section>
-
-  <div id="readme-popup" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#00000088;z-index:10000;display:flex;justify-content:center;align-items:center;">
-    <div style="background:#fff8e8;padding:20px;border-radius:12px;max-width:90vw;width:400px;box-shadow:0 4px 8px rgba(0,0,0,0.2);color:#4d3c2b;font-size:16px;line-height:1.5;position:relative">
-      <button onclick="document.getElementById('readme-popup').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:20px;cursor:pointer">×</button>
-      <p>※ 點擊課程 title，會跳到報名連結；如果跳回粉絲頁的請私訊我報名。</p>
-      <p>※ ☆ = 上午的活動、★ = 下午的活動、✪ = 夜間的活動</p>
-      <p>※ 課表不會全部在上面，額滿或是網頁維護困難我就會移除掉了；要約時間、許願課程開課請直接私訊我。</p>
-      <p>👉 任何技術問題請洽「瑋瑋老師的撒野記事錄」Facebook 粉絲頁。</p>
+  <footer>
+    <div class="wrap">
+      © 2026 瑋瑋老師的撒野記事錄 · Calendar Page
     </div>
-  </div>
+  </footer>
 
   <script>
     let eventsByDate = {};
@@ -294,7 +507,7 @@
 
       for (let i = 0; i < startDay; i++) {
         const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'day';
+        emptyDiv.className = 'day empty';
         calendarDays.appendChild(emptyDiv);
       }
 
@@ -308,7 +521,12 @@
         div.setAttribute('tabindex', '0');
         div.setAttribute('aria-label', `${month + 1}月${day}日`);
 
-        const isToday = (year === new Date().getFullYear() && month === new Date().getMonth() && day === new Date().getDate());
+        const isToday = (
+          year === new Date().getFullYear() &&
+          month === new Date().getMonth() &&
+          day === new Date().getDate()
+        );
+
         if (isToday && selectedDate === null) {
           div.classList.add('selected');
         }
@@ -324,11 +542,12 @@
           }
         });
 
-        if (events) {
-          const header = document.createElement('strong');
-          header.textContent = `${month + 1}/${day}`;
-          div.appendChild(header);
+        const header = document.createElement('div');
+        header.className = 'day-number';
+        header.textContent = `${month + 1}/${day}`;
+        div.appendChild(header);
 
+        if (events) {
           events.forEach(event => {
             const tooltipHTML = event.tooltip.replace(/\n/g, '<br>');
             let icon = '★';
@@ -341,20 +560,14 @@
             const entry = document.createElement('div');
             entry.className = 'event';
 
-            const titleLink = document.createElement('u');
-            titleLink.textContent = `${event.title}`;
-            titleLink.style.cursor = 'pointer';
-            titleLink.style.textDecoration = 'underline';
-            titleLink.style.color = '#4d3c2b';
-            titleLink.onclick = () => window.open(event.url);
-
-            const titleDiv = document.createElement('div');
-            titleDiv.innerHTML = `${icon} `;
-            titleDiv.appendChild(titleLink);
+            const titleLink = document.createElement('span');
+            titleLink.className = 'event-title';
+            titleLink.textContent = `${icon} ${event.title}`;
+            titleLink.onclick = () => window.open(event.url, '_blank');
 
             const toggleButton = document.createElement('button');
             toggleButton.className = 'toggle-btn';
-            toggleButton.textContent = '顯示/隱藏說明';
+            toggleButton.textContent = '顯示 / 隱藏說明';
             toggleButton.onclick = function (e) {
               toggleTooltip(this);
               e.stopPropagation();
@@ -364,13 +577,11 @@
             tooltip.className = 'tooltip';
             tooltip.innerHTML = `${icon} ${event.title}：${event.time}<br>${tooltipHTML}`;
 
-            entry.appendChild(titleDiv);
+            entry.appendChild(titleLink);
             entry.appendChild(toggleButton);
             entry.appendChild(tooltip);
             div.appendChild(entry);
           });
-        } else {
-          div.textContent = `${month + 1}/${day}`;
         }
 
         calendarDays.appendChild(div);
@@ -411,7 +622,7 @@
     function setEmptyMessage(message) {
       const emptyMessageEl = document.getElementById('event-empty-message');
       emptyMessageEl.textContent = message;
-      emptyMessageEl.style.display = message ? 'block' : 'none';
+      emptyMessageEl.style.display = message ? 'block' : 'block';
     }
 
     function showEvents(dateStr) {
@@ -424,7 +635,6 @@
 
       const eventListEl = document.getElementById('event-list');
       const panelTitleEl = document.getElementById('event-panel-title');
-
       const events = eventsByDate[dateStr];
       panelTitleEl.textContent = formatDisplayDate(dateStr);
       eventListEl.innerHTML = '';
