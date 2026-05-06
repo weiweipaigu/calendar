@@ -362,5 +362,13 @@
             "tooltip": "下午名額2, 適齡4歲以上, 請私訊粉專報名",
             "url": "https://www.facebook.com/weiweipaigu"
         }  
-     ]        
+     ],
+    "2026-05-06": [
+        {
+            "title": "大安區 福州山 夜間生態觀察",
+            "time": "18:30-21:00",
+            "tooltip": "國中生以上可獨立參加",
+            "url": "https://www.beclass.com/rid=305269a69fa9ee2bd3c2"
+        }
+    ]        
 }
