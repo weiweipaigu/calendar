@@ -394,5 +394,18 @@
             "tooltip": "國中生以上可獨立參加；8歲以上孩子可由家長陪同參加",
             "url": "https://www.beclass.com/rid=30526a06a0340e80518b"
         }
+    ],
+    "2026-05-23": [
+        {
+            "title": "陽明山 冷擎步道 親子活動",
+            "time": "10:00-12:00",
+            "tooltip": "名額2, 適齡四歲以上，樓梯偏多，斟酌參加",
+            "url": "https://www.facebook.com/weiweipaigu"
+        },{
+            "title": "陽明山 冷擎步道 親子活動",
+            "time": "14:00-16:00",
+            "tooltip": "名額1, 適齡四歲以上，樓梯偏多，斟酌參加",
+            "url": "https://www.facebook.com/weiweipaigu"
+        }
     ]        
 }
