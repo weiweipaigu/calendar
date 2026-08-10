@@ -4,675 +4,137 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendar | 瑋瑋老師的撒野記事錄</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root {
-      --bg: #f7f5ef;
-      --card: #ffffff;
-      --text: #2f3a33;
-      --muted: #66756b;
-      --line: #dfe6df;
-      --accent: #5d7a67;
-      --accent-soft: #e8efe8;
-      --highlight: #f4ede0;
-      --shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
-      --max: 1100px;
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .wrap {
-      width: min(92%, var(--max));
-      margin: 0 auto;
-    }
-
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(247, 245, 239, 0.92);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 0;
-      gap: 16px;
-    }
-
-    .brand {
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .menu {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .hero {
-      padding: 56px 0 24px;
-    }
-
-    .hero-box {
-      background: linear-gradient(135deg, #eef4ee, #fbfaf6);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      padding: 34px 28px;
-    }
-
-    h1, h2, h3 {
-      line-height: 1.25;
-      margin: 0 0 14px;
-    }
-
-    h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-    }
-
-    p {
-      margin: 0 0 14px;
-    }
-
-    .lead {
-      color: var(--muted);
-      max-width: 760px;
-      font-size: 1.03rem;
-    }
-
-    .note {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 999px;
-      font-size: 0.92rem;
-    }
-
-    .calendar-section {
-      padding: 8px 0 24px;
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .calendar-controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .calendar-header button {
-      padding: 10px 16px;
-      background: var(--accent);
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      color: #ffffff;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-    }
-
-    .calendar-header button:hover {
-      opacity: 0.9;
-    }
-
-    .calendar-title {
-      font-size: clamp(1.5rem, 3vw, 2rem);
-      margin: 0;
-    }
-
-    .calendar-shell {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .calendar-container {
-      overflow-x: auto;
-      overflow-y: visible;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(120px, 1fr));
-      gap: 10px;
-      min-width: 860px;
-    }
-
-    .weekday {
-      text-align: center;
-      font-weight: 700;
-      padding: 8px 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
-    .day {
-      background: #ffffff;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      position: relative;
-      min-height: 110px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
-      transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
-      overflow: visible;
-    }
-
-    .day:hover {
-      transform: translateY(-2px);
-      background-color: #fcfcf8;
-      border-color: #cfdacf;
-    }
-
-    .day.selected {
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 0 3px #e8efe8;
-    }
-
-    .day.empty {
-      background: transparent;
-      box-shadow: none;
-      border: 1px dashed transparent;
-    }
-
-    .day-number {
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .event {
-      position: relative;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
-
-    .event-title {
-      color: var(--text);
-      text-decoration: underline;
-      cursor: pointer;
-      word-break: break-word;
-    }
-
-    .event .toggle-btn {
-      margin-top: 4px;
-      padding: 0;
-      font-size: 12px;
-      background: none;
-      border: none;
-      color: var(--muted);
-      text-decoration: underline;
-      cursor: pointer;
-    }
-
-    .event .tooltip {
-      display: none;
-      position: absolute;
-      top: 26px;
-      left: 0;
-      background: #fff8ef;
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid #eadfcb;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-      z-index: 10001;
-      width: 230px;
-      white-space: normal;
-      line-height: 1.6;
-    }
-
-    .event-panel {
-      margin-top: 20px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-    }
-
-    .event-panel h2 {
-      margin: 0 0 12px;
-      font-size: 1.35rem;
-    }
-
-    .event-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .event-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      background: #fbfbf8;
-    }
-
-    .event-card h3 {
-      margin: 0 0 6px;
-      font-size: 1.08rem;
-      color: var(--text);
-    }
-
-    .event-card p {
-      margin: 6px 0;
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .event-card a {
-      color: var(--accent);
-      text-decoration: underline;
-      font-weight: 600;
-    }
-
-    .time-tag {
-      display: inline-block;
-      padding: 4px 10px;
-      background: var(--accent-soft);
-      border-radius: 999px;
-      font-size: 0.88rem;
-      color: #335538;
-      margin-bottom: 8px;
-    }
-
-    .empty-message {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .popup-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 10000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
-    .popup-card {
-      background: #fff8ef;
-      padding: 22px 22px 18px;
-      border-radius: 18px;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
-      color: var(--text);
-      position: relative;
-      border: 1px solid #eadfcb;
-    }
-
-    .popup-close {
-      position: absolute;
-      top: 8px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      color: var(--muted);
-    }
-
-    footer {
-      padding: 20px 0 48px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    @media (max-width: 768px) {
-      .nav-inner,
-      .calendar-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .hero-box,
-      .event-panel,
-      .calendar-shell {
-        padding: 20px;
-      }
-
-      .calendar-grid {
-        grid-template-columns: repeat(7, minmax(220px, 1fr));
-        min-width: 1540px;
-      }
-
-      .event .tooltip {
-        position: relative;
-        top: auto;
-        left: auto;
-        width: auto;
-        max-width: 90vw;
-        margin-top: 6px;
-      }
-    }
+    :root{--bg:#f7f5ef;--card:#fff;--text:#2f3a33;--muted:#66756b;--line:#dfe6df;--accent:#5d7a67;--accent-soft:#e8efe8;--danger:#a65353;--danger-soft:#f8eaea;--max:1100px}
+    *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI","Noto Sans TC",sans-serif;line-height:1.7} a{text-decoration:none;color:inherit} button{font:inherit}
+    .wrap{width:min(92%,var(--max));margin:0 auto}.nav{position:sticky;top:0;z-index:20;background:rgba(247,245,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px}.brand{font-weight:700}.menu{display:flex;gap:18px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
+    .hero{padding:56px 0 24px}.hero-box{background:linear-gradient(135deg,#eef4ee,#fbfaf6);border:1px solid var(--line);border-radius:28px;padding:34px 28px}
+    h1,h2,h3{line-height:1.25;margin:0 0 14px}h1{font-size:clamp(2rem,5vw,3rem)}p{margin:0 0 14px}.lead{color:var(--muted)}.note{display:inline-block;margin-top:10px;padding:8px 12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;font-size:.92rem}
+    .calendar-section{padding:8px 0 24px}.calendar-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}.calendar-controls{display:flex;gap:10px}
+    .calendar-header button{padding:10px 16px;background:var(--accent);border:1px solid var(--accent);border-radius:999px;color:#fff;cursor:pointer}.calendar-title{font-size:clamp(1.5rem,3vw,2rem);margin:0}
+    .calendar-shell,.event-panel{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 10px 28px rgba(0,0,0,.04)}.calendar-shell{padding:18px}
+    .calendar-container{overflow-x:auto;-webkit-overflow-scrolling:touch}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;min-width:860px}
+    .weekday{text-align:center;font-weight:700;padding:8px 0;color:var(--muted)}.day{background:#fff;padding:12px;border:1px solid var(--line);border-radius:18px;min-height:118px;box-shadow:0 6px 18px rgba(0,0,0,.03);transition:.15s}
+    .day:hover{transform:translateY(-2px)}.day.selected{border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.day.empty{background:transparent;box-shadow:none;border-color:transparent}.day-number{font-weight:700;margin-bottom:8px}
+    .event-mini{margin-bottom:8px;padding:8px 9px;border-radius:12px;background:#fbfbf8;border:1px solid var(--line);cursor:pointer}.event-mini-title{font-size:.92rem;font-weight:600}.event-mini-meta{margin-top:4px;color:var(--muted);font-size:.78rem}
+    .event-panel{margin-top:20px;padding:22px}.event-list{display:grid;gap:14px}.event-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fbfbf8}.event-card-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .event-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;margin:12px 0}.meta-label{color:var(--muted);font-size:.82rem;margin-right:4px}.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:.86rem;font-weight:600}.badge.full{background:var(--danger-soft);color:var(--danger)}
+    .event-description{margin:8px 0 12px}.btn{display:inline-block;padding:10px 16px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:600}.btn.disabled{opacity:.55;pointer-events:none}.empty-message{color:var(--muted)}
+    .message{display:none;margin-bottom:16px;padding:12px 14px;border-radius:14px}.message.error{display:block;background:var(--danger-soft);color:var(--danger)}footer{padding:20px 0 48px;color:var(--muted);font-size:.92rem}
+    @media(max-width:768px){.nav-inner,.calendar-header{flex-direction:column;align-items:flex-start}.hero-box,.event-panel,.calendar-shell{padding:20px}.calendar-grid{grid-template-columns:repeat(7,minmax(220px,1fr));min-width:1540px}.event-meta{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="wrap nav-inner">
-      <div class="brand">瑋瑋老師的撒野記事錄</div>
-      <div class="menu">
-        <a href="https://weiweipaigu.github.io/home/">Home</a>
-        <a href="https://weiweipaigu.github.io/calendar/">Calendar</a>
-        <a href="https://weiweipaigu.github.io/shopping/">Shopping</a>
-        <a href="https://weiweipaigu.github.io/about/">About</a>
+<nav class="nav"><div class="wrap nav-inner"><div class="brand">瑋瑋老師的撒野記事錄</div><div class="menu">
+<a href="https://weiweipaigu.github.io/home/">Home</a>
+<a href="https://weiweipaigu.github.io/calendar/">Calendar</a>
+<a href="https://weiweipaigu.github.io/shopping/">Shopping</a>
+<a href="https://weiweipaigu.github.io/about/">About</a>
+</div></div></nav>
+
+<header class="hero"><div class="wrap"><div class="hero-box">
+<h1>行事曆 / Calendar</h1>
+<p class="lead">這裡整理近期課程、活動與導覽資訊。活動資料與剩餘名額會直接由報名系統同步。</p>
+<div class="note">☆ 上午活動　★ 下午活動　✪ 夜間活動</div>
+</div></div></header>
+
+<main><section class="calendar-section"><div class="wrap">
+<div id="loadError" class="message error"></div>
+<div class="calendar-header">
+<div class="calendar-controls"><button onclick="changeMonth(-1)">&lt; 上月</button><button onclick="changeMonth(1)">下月 &gt;</button></div>
+<h2 class="calendar-title" id="calendar-title"></h2>
+</div>
+<div class="calendar-shell"><div class="calendar-container">
+<div class="calendar-grid" id="calendar-weekdays"></div>
+<div class="calendar-grid" id="calendar-days"></div>
+</div></div>
+<section class="event-panel">
+<h2 id="event-panel-title">點擊日期查看活動</h2>
+<div class="event-list" id="event-list"></div>
+<p class="empty-message" id="event-empty-message">尚未選擇日期</p>
+</section>
+</div></section></main>
+
+<footer><div class="wrap">© 2026 瑋瑋老師的撒野記事錄 · Calendar Page</div></footer>
+
+<script>
+const SUPABASE_URL="https://aexhjnpskprtvpqbxriy.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let eventsByDate={},currentDate=new Date(),selectedDate=null;
+
+function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function displayDate(s){const [y,m,d]=s.split('-');return `${y} 年 ${Number(m)} 月 ${Number(d)} 日 活動`}
+function timeText(s){return s?s.slice(0,5):""}
+function iconFor(s){if(!s)return'★';const h=Number(s.slice(0,2));return h<12?'☆':h>=17?'✪':'★'}
+
+async function loadEvents(){
+  const {data,error}=await client.from('events').select('id,title,event_date,start_time,end_time,location,description,capacity,price,status').order('event_date').order('start_time');
+  if(error){const el=document.getElementById('loadError');el.textContent='活動資訊讀取失敗，請稍後再試。';el.style.display='block';console.error(error);return}
+  const enriched=[];
+  for(const event of data||[]){
+    const {data:pub}=await client.rpc('get_event_public',{p_event_id:event.id});
+    enriched.push(pub&&pub[0]?pub[0]:{...event,registered:0,remaining:event.capacity});
+  }
+  eventsByDate={};
+  for(const e of enriched){(eventsByDate[e.event_date]??=[]).push(e)}
+  renderWeekdays();renderCalendar(currentDate.getFullYear(),currentDate.getMonth());
+  const today=dateKey(new Date());eventsByDate[today]?showEvents(today):setEmpty('請點擊日期查看活動');
+}
+
+function renderWeekdays(){
+  const c=document.getElementById('calendar-weekdays');c.innerHTML='';
+  ['日','一','二','三','四','五','六'].forEach(x=>{const d=document.createElement('div');d.className='weekday';d.textContent=x;c.appendChild(d)})
+}
+
+function renderCalendar(year,month){
+  document.getElementById('calendar-title').textContent=`${year} 年 ${month+1} 月行事曆`;
+  const c=document.getElementById('calendar-days');c.innerHTML='';
+  const first=new Date(year,month,1),last=new Date(year,month+1,0);
+  for(let i=0;i<first.getDay();i++){const e=document.createElement('div');e.className='day empty';c.appendChild(e)}
+  for(let day=1;day<=last.getDate();day++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const box=document.createElement('div');box.className='day';box.dataset.date=ds;box.onclick=()=>showEvents(ds);
+    if(selectedDate===ds)box.classList.add('selected');
+    const n=document.createElement('div');n.className='day-number';n.textContent=`${month+1}/${day}`;box.appendChild(n);
+    for(const e of eventsByDate[ds]||[]){
+      const mini=document.createElement('div');mini.className='event-mini';
+      mini.onclick=ev=>{ev.stopPropagation();showEvents(ds)};
+      mini.innerHTML=`<div class="event-mini-title">${iconFor(e.start_time)} ${e.title}</div><div class="event-mini-meta">${timeText(e.start_time)}${e.start_time?'｜':''}${e.status!=='open'?'未開放':Number(e.remaining)<=0?'已額滿':`剩 ${e.remaining} 名`}</div>`;
+      box.appendChild(mini);
+    }
+    c.appendChild(box);
+  }
+}
+
+function changeMonth(offset){currentDate.setMonth(currentDate.getMonth()+offset);selectedDate=null;renderCalendar(currentDate.getFullYear(),currentDate.getMonth());resetPanel()}
+function resetPanel(){document.getElementById('event-panel-title').textContent='點擊日期查看活動';document.getElementById('event-list').innerHTML='';setEmpty('尚未選擇日期')}
+function setEmpty(msg){const el=document.getElementById('event-empty-message');el.textContent=msg;el.style.display=msg?'block':'none'}
+
+function showEvents(ds){
+  selectedDate=ds;document.querySelectorAll('.day').forEach(x=>{if(x.dataset.date)x.classList.toggle('selected',x.dataset.date===ds)});
+  const list=document.getElementById('event-list'),events=eventsByDate[ds]||[];document.getElementById('event-panel-title').textContent=displayDate(ds);list.innerHTML='';
+  if(!events.length){setEmpty('此日期沒有活動，歡迎選擇其他日期');return} setEmpty('');
+  for(const e of events){
+    const closed=e.status!=='open',full=Number(e.remaining)<=0,start=timeText(e.start_time),end=timeText(e.end_time);
+    const card=document.createElement('article');card.className='event-card';
+    card.innerHTML=`
+      <div class="event-card-head">
+        <div><h3>${iconFor(e.start_time)} ${e.title}</h3><div class="lead">${start&&end?`${start}–${end}`:(start||end||'時間未定')}</div></div>
+        <span class="badge${closed||full?' full':''}">${closed?'目前未開放報名':full?'已額滿':`剩餘 ${e.remaining} / ${e.capacity} 名`}</span>
       </div>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <div class="wrap">
-      <div class="hero-box">
-        <h1>行事曆 / Calendar</h1>
-        <p class="lead">整理近期課程、活動與導覽資訊。如果上面沒有看到的活動，代表可能沒有名額、或是非我獨立開設之活動。點選日期可查看當日活動，若有報名連結也會顯示在下方資訊卡中。</p>
-        <div class="note">☆ 上午活動　★ 下午活動　✪ 夜間活動</div>
+      <div class="event-meta">
+        <div><span class="meta-label">地點</span>${e.location||'未提供'}</div>
+        <div><span class="meta-label">費用</span>${Number(e.price)>0?`NT$ ${Number(e.price).toLocaleString('zh-TW')}`:'請依活動說明'}</div>
       </div>
-    </div>
-  </header>
-
-  <main>
-    <section class="calendar-section">
-      <div class="wrap">
-        <div class="calendar-header">
-          <div class="calendar-controls">
-            <button onclick="changeMonth(-1)" aria-label="上一月">&lt; 上月</button>
-            <button onclick="changeMonth(1)" aria-label="下一月">下月 &gt;</button>
-          </div>
-          <h2 class="calendar-title" id="calendar-title"></h2>
-        </div>
-
-        <div class="calendar-shell">
-          <div class="calendar-container">
-            <div class="calendar-grid" id="calendar-weekdays"></div>
-            <div class="calendar-grid" id="calendar-days"></div>
-          </div>
-        </div>
-
-        <section class="event-panel" aria-live="polite">
-          <h2 id="event-panel-title">點擊日期查看活動</h2>
-          <div class="event-list" id="event-list"></div>
-          <p class="empty-message" id="event-empty-message">尚未選擇日期</p>
-        </section>
-      </div>
-    </section>
-  </main>
-
-  <div id="readme-popup" class="popup-backdrop">
-    <div class="popup-card">
-      <button class="popup-close" onclick="document.getElementById('readme-popup').style.display='none'">×</button>
-      <p>※ 點擊課程 title，會跳到報名連結；如果跳回粉絲頁，請直接私訊我報名。</p>
-      <p>※ ☆ 代表上午活動、★ 代表下午活動、✪ 代表夜間活動。</p>
-      <p>※ 課表不會全部列在上面；若額滿或頁面需要整理，我會先移除活動內容。</p>
-      <p>👉 技術問題或課程洽詢，請至「瑋瑋老師的撒野記事錄」Facebook 粉絲頁。</p>
-    </div>
-  </div>
-
-  <footer>
-    <div class="wrap">
-      © 2026 瑋瑋老師的撒野記事錄 · Calendar Page
-    </div>
-  </footer>
-
-  <script>
-    let eventsByDate = {};
-    let currentDate = new Date();
-    let selectedDate = null;
-
-    fetch('events.json')
-      .then(response => response.json())
-      .then(data => {
-        eventsByDate = data;
-        renderWeekdays();
-        renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-        const todayStr = formatDateKey(new Date());
-        if (eventsByDate[todayStr]) {
-          showEvents(todayStr);
-        } else {
-          setEmptyMessage('請點擊日期查看活動');
-        }
-      })
-      .catch(err => {
-        console.error('讀取 events.json 失敗:', err);
-        setEmptyMessage('活動資訊載入失敗，請稍後再試');
-      });
-
-    document.addEventListener('click', function(e) {
-      const isTooltipOrButton = e.target.closest('.tooltip') || e.target.classList.contains('toggle-btn');
-      if (!isTooltipOrButton) {
-        document.querySelectorAll('.tooltip').forEach(t => t.style.display = 'none');
-      }
-    });
-
-    function renderWeekdays() {
-      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-      const weekdayContainer = document.getElementById('calendar-weekdays');
-      weekdayContainer.innerHTML = '';
-      weekdays.forEach(day => {
-        const div = document.createElement('div');
-        div.className = 'weekday';
-        div.textContent = day;
-        weekdayContainer.appendChild(div);
-      });
-    }
-
-    function renderCalendar(year, month) {
-      const calendarTitle = document.getElementById('calendar-title');
-      const calendarDays = document.getElementById('calendar-days');
-      calendarDays.innerHTML = '';
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-      const totalDays = lastDay.getDate();
-      const startDay = firstDay.getDay();
-
-      calendarTitle.textContent = `${year} 年 ${month + 1} 月行事曆`;
-
-      for (let i = 0; i < startDay; i++) {
-        const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'day empty';
-        calendarDays.appendChild(emptyDiv);
-      }
-
-      for (let day = 1; day <= totalDays; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const events = eventsByDate[dateStr];
-        const div = document.createElement('div');
-        div.className = 'day';
-        div.dataset.date = dateStr;
-        div.setAttribute('role', 'button');
-        div.setAttribute('tabindex', '0');
-        div.setAttribute('aria-label', `${month + 1}月${day}日`);
-
-        const isToday = (
-          year === new Date().getFullYear() &&
-          month === new Date().getMonth() &&
-          day === new Date().getDate()
-        );
-
-        if (isToday && selectedDate === null) {
-          div.classList.add('selected');
-        }
-        if (selectedDate === dateStr) {
-          div.classList.add('selected');
-        }
-
-        div.addEventListener('click', () => showEvents(dateStr));
-        div.addEventListener('keypress', (event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            showEvents(dateStr);
-          }
-        });
-
-        const header = document.createElement('div');
-        header.className = 'day-number';
-        header.textContent = `${month + 1}/${day}`;
-        div.appendChild(header);
-
-        if (events) {
-          events.forEach(event => {
-            const tooltipHTML = event.tooltip.replace(/\n/g, '<br>');
-            let icon = '★';
-            if (/\d{2}:\d{2}/.test(event.time)) {
-              const [hour] = event.time.split(':').map(Number);
-              if (hour < 12) icon = '☆';
-              else if (hour >= 17) icon = '✪';
-            }
-
-            const entry = document.createElement('div');
-            entry.className = 'event';
-
-            const titleLink = document.createElement('span');
-            titleLink.className = 'event-title';
-            titleLink.textContent = `${icon} ${event.title}`;
-            titleLink.onclick = () => window.open(event.url, '_blank');
-
-            const toggleButton = document.createElement('button');
-            toggleButton.className = 'toggle-btn';
-            toggleButton.textContent = '顯示 / 隱藏說明';
-            toggleButton.onclick = function (e) {
-              toggleTooltip(this);
-              e.stopPropagation();
-            };
-
-            const tooltip = document.createElement('div');
-            tooltip.className = 'tooltip';
-            tooltip.innerHTML = `${icon} ${event.title}：${event.time}<br>${tooltipHTML}`;
-
-            entry.appendChild(titleLink);
-            entry.appendChild(toggleButton);
-            entry.appendChild(tooltip);
-            div.appendChild(entry);
-          });
-        }
-
-        calendarDays.appendChild(div);
-      }
-    }
-
-    function toggleTooltip(button) {
-      const allTooltips = document.querySelectorAll('.tooltip');
-      allTooltips.forEach(tip => tip.style.display = 'none');
-      const tooltip = button.nextElementSibling;
-      if (tooltip.style.display !== 'block') {
-        tooltip.style.display = 'block';
-      }
-    }
-
-    function changeMonth(offset) {
-      currentDate.setMonth(currentDate.getMonth() + offset);
-      selectedDate = null;
-      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
-      resetEventPanel();
-    }
-
-    function formatDateKey(date) {
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    }
-
-    function formatDisplayDate(dateStr) {
-      const [year, month, day] = dateStr.split('-');
-      return `${year} 年 ${Number(month)} 月 ${Number(day)} 日 活動`;
-    }
-
-    function resetEventPanel() {
-      document.getElementById('event-panel-title').textContent = '點擊日期查看活動';
-      document.getElementById('event-list').innerHTML = '';
-      setEmptyMessage('尚未選擇日期');
-    }
-
-    function setEmptyMessage(message) {
-      const emptyMessageEl = document.getElementById('event-empty-message');
-      emptyMessageEl.textContent = message;
-      emptyMessageEl.style.display = message ? 'block' : 'block';
-    }
-
-    function showEvents(dateStr) {
-      selectedDate = dateStr;
-      document.querySelectorAll('.day').forEach(dayEl => {
-        if (dayEl.dataset.date) {
-          dayEl.classList.toggle('selected', dayEl.dataset.date === dateStr);
-        }
-      });
-
-      const eventListEl = document.getElementById('event-list');
-      const panelTitleEl = document.getElementById('event-panel-title');
-      const events = eventsByDate[dateStr];
-      panelTitleEl.textContent = formatDisplayDate(dateStr);
-      eventListEl.innerHTML = '';
-
-      if (!events || events.length === 0) {
-        setEmptyMessage('此日期沒有活動，歡迎選擇其他日期');
-        return;
-      }
-
-      setEmptyMessage('');
-      events.forEach(event => {
-        const card = document.createElement('div');
-        card.className = 'event-card';
-
-        const title = document.createElement('h3');
-        title.textContent = event.title;
-
-        const timeTag = document.createElement('div');
-        timeTag.className = 'time-tag';
-        timeTag.textContent = event.time;
-
-        const description = document.createElement('p');
-        description.innerHTML = event.tooltip.replace(/\n/g, '<br>');
-
-        const link = document.createElement('a');
-        link.href = event.url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = '前往活動報名';
-
-        card.appendChild(title);
-        card.appendChild(timeTag);
-        card.appendChild(description);
-        card.appendChild(link);
-        eventListEl.appendChild(card);
-      });
-    }
-  </script>
+      ${e.description?`<p class="event-description">${e.description}</p>`:''}
+      <a class="btn${closed||full?' disabled':''}" href="https://weiweipaigu.github.io/booking/?event=${e.id}">${closed?'未開放報名':full?'已額滿':'立即報名'}</a>`;
+    list.appendChild(card);
+  }
+}
+loadEvents();
+</script>
 </body>
 </html>
