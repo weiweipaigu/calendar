@@ -71,7 +71,7 @@ function timeText(s){return s?s.slice(0,5):""}
 function iconFor(s){if(!s)return'★';const h=Number(s.slice(0,2));return h<12?'☆':h>=17?'✪':'★'}
 
 async function loadEvents(){
-  const {data,error}=await client.from('events').select('id,title,event_date,start_time,end_time,location,description,capacity,price,status').order('event_date').order('start_time');
+  const {data,error}=await client.from('events').select('id,title,event_date,start_time,end_time,location,description,capacity,price,status').neq('status','archived').order('event_date').order('start_time');
   if(error){const el=document.getElementById('loadError');el.textContent='活動資訊讀取失敗，請稍後再試。';el.style.display='block';console.error(error);return}
   const enriched=[];
   for(const event of data||[]){
