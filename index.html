@@ -3,138 +3,1213 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calendar | 瑋瑋老師的撒野記事錄</title>
+
+  <title>活動行事曆｜瑋瑋老師的撒野記事錄｜台灣生態導覽・親子活動</title>
+  <meta name="description" content="查看瑋瑋老師近期的台灣生態導覽、日間親子活動、夜間觀察活動與社群特別活動。行事曆同步顯示活動日期、時間、地點與剩餘名額，公開場次可直接進入報名系統。" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://calendar.weiweipaigu.com/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="zh_TW" />
+  <meta property="og:site_name" content="瑋瑋老師的撒野記事錄" />
+  <meta property="og:title" content="活動行事曆｜瑋瑋老師的撒野記事錄" />
+  <meta property="og:description" content="日間親子活動、夜間觀察活動與社群特別活動，都整理在這裡。查看日期、剩餘名額與活動詳情後即可前往報名。" />
+  <meta property="og:url" content="https://calendar.weiweipaigu.com/" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "瑋瑋老師的撒野記事錄｜活動行事曆",
+    "url": "https://calendar.weiweipaigu.com/",
+    "description": "瑋瑋老師近期生態導覽、親子活動、夜間觀察與社群活動行事曆。"
+  }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    :root{--bg:#f7f5ef;--card:#fff;--text:#2f3a33;--muted:#66756b;--line:#dfe6df;--accent:#5d7a67;--accent-soft:#e8efe8;--danger:#a65353;--danger-soft:#f8eaea;--max:1100px}
-    *{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI","Noto Sans TC",sans-serif;line-height:1.7} a{text-decoration:none;color:inherit} button{font:inherit}
-    .wrap{width:min(92%,var(--max));margin:0 auto}.nav{position:sticky;top:0;z-index:20;background:rgba(247,245,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0;gap:16px}.brand{font-weight:700}.menu{display:flex;gap:18px;flex-wrap:wrap;font-size:.95rem;color:var(--muted)}
-    .hero{padding:56px 0 24px}.hero-box{background:linear-gradient(135deg,#eef4ee,#fbfaf6);border:1px solid var(--line);border-radius:28px;padding:34px 28px}
-    h1,h2,h3{line-height:1.25;margin:0 0 14px}h1{font-size:clamp(2rem,5vw,3rem)}p{margin:0 0 14px}.lead{color:var(--muted)}.note{display:inline-block;margin-top:10px;padding:8px 12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;font-size:.92rem}
-    .calendar-section{padding:8px 0 24px}.calendar-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}.calendar-controls{display:flex;gap:10px}
-    .calendar-header button{padding:10px 16px;background:var(--accent);border:1px solid var(--accent);border-radius:999px;color:#fff;cursor:pointer}.calendar-title{font-size:clamp(1.5rem,3vw,2rem);margin:0}
-    .calendar-shell,.event-panel{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 10px 28px rgba(0,0,0,.04)}.calendar-shell{padding:18px}
-    .calendar-container{overflow-x:auto;-webkit-overflow-scrolling:touch}.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;min-width:860px}
-    .weekday{text-align:center;font-weight:700;padding:8px 0;color:var(--muted)}.day{background:#fff;padding:12px;border:1px solid var(--line);border-radius:18px;min-height:118px;box-shadow:0 6px 18px rgba(0,0,0,.03);transition:.15s}
-    .day:hover{transform:translateY(-2px)}.day.selected{border:2px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.day.empty{background:transparent;box-shadow:none;border-color:transparent}.day-number{font-weight:700;margin-bottom:8px}
-    .event-mini{margin-bottom:8px;padding:8px 9px;border-radius:12px;background:#fbfbf8;border:1px solid var(--line);cursor:pointer}.event-mini-title{font-size:.92rem;font-weight:600}.event-mini-meta{margin-top:4px;color:var(--muted);font-size:.78rem}
-    .event-panel{margin-top:20px;padding:22px}.event-list{display:grid;gap:14px}.event-card{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fbfbf8}.event-card-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
-    .event-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 16px;margin:12px 0}.meta-label{color:var(--muted);font-size:.82rem;margin-right:4px}.badge{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:.86rem;font-weight:600}.badge.full{background:var(--danger-soft);color:var(--danger)}
-    .event-description{margin:8px 0 12px}.btn{display:inline-block;padding:10px 16px;border-radius:999px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:600}.btn.disabled{opacity:.55;pointer-events:none}.empty-message{color:var(--muted)}
-    .message{display:none;margin-bottom:16px;padding:12px 14px;border-radius:14px}.message.error{display:block;background:var(--danger-soft);color:var(--danger)}footer{padding:20px 0 48px;color:var(--muted);font-size:.92rem}
-    @media(max-width:768px){.nav-inner,.calendar-header{flex-direction:column;align-items:flex-start}.hero-box,.event-panel,.calendar-shell{padding:20px}.calendar-grid{grid-template-columns:repeat(7,minmax(220px,1fr));min-width:1540px}.event-meta{grid-template-columns:1fr}}
+    :root {
+      --bg: #f7f5ef;
+      --card: #ffffff;
+      --text: #2f3a33;
+      --muted: #66756b;
+      --line: #dfe6df;
+      --accent: #5d7a67;
+      --accent-soft: #e8efe8;
+      --danger: #a65353;
+      --danger-soft: #f8eaea;
+      --warning: #b38a28;
+      --warning-soft: #fff5d9;
+      --neutral: #8d9690;
+      --neutral-soft: #eef1ef;
+      --max: 1100px;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .wrap {
+      width: min(92%, var(--max));
+      margin: 0 auto;
+    }
+
+    /* ---------- Navbar ---------- */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(247,245,239,.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      gap: 18px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      font-size: .95rem;
+      color: var(--muted);
+    }
+
+    .menu a { transition: color .2s ease; }
+    .menu a:hover,
+    .menu a[aria-current="page"] { color: var(--accent); }
+
+    /* ---------- Hero / instructions ---------- */
+
+    .hero {
+      padding: 52px 0 24px;
+    }
+
+    .hero-box {
+      background: linear-gradient(135deg, #eef4ee, #fbfaf6);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 34px 28px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.3;
+      margin: 0 0 12px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+    }
+
+    p { margin: 0 0 12px; }
+
+    .lead {
+      color: var(--muted);
+      max-width: 820px;
+    }
+
+    .guide-card {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.74);
+      border: 1px solid var(--line);
+    }
+
+    .guide-card h2 {
+      font-size: 1.08rem;
+      margin-bottom: 8px;
+    }
+
+    .guide-card p {
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .guide-card p:last-child { margin-bottom: 0; }
+
+    .legend-groups {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px 28px;
+      margin-top: 16px;
+    }
+
+    .legend-group {
+      display: grid;
+      gap: 7px;
+    }
+
+    .legend-title {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .88rem;
+      color: var(--muted);
+    }
+
+    .type-chip {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .type-family {
+      background: #edf4e9;
+      color: #54704f;
+      border-color: #dce9d6;
+    }
+
+    .type-night {
+      background: #edf0f7;
+      color: #596782;
+      border-color: #dde3ef;
+    }
+
+    .type-special {
+      background: #f7ece8;
+      color: #8a6256;
+      border-color: #ecdcd5;
+    }
+
+    .type-unknown {
+      background: var(--neutral-soft);
+      color: var(--neutral);
+      border-color: #dfe5e1;
+    }
+
+    /* ---------- Calendar ---------- */
+
+    .calendar-section {
+      padding: 8px 0 26px;
+    }
+
+    .calendar-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-title {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      margin: 0;
+      text-align: center;
+    }
+
+    .calendar-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-controls.end {
+      justify-content: flex-end;
+    }
+
+    .control-btn {
+      padding: 9px 14px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--accent);
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .2s ease, background-color .2s ease;
+    }
+
+    .control-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .calendar-shell,
+    .event-panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.04);
+    }
+
+    .calendar-shell {
+      padding: 16px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .weekday {
+      text-align: center;
+      font-weight: 700;
+      padding: 6px 0 9px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .day {
+      position: relative;
+      min-width: 0;
+      min-height: 108px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .day:hover {
+      transform: translateY(-1px);
+      border-color: #c9d8cc;
+    }
+
+    .day.selected {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      padding: 8px;
+    }
+
+    .day.today .day-number {
+      color: white;
+      background: var(--accent);
+    }
+
+    .day.empty {
+      cursor: default;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .day.empty:hover { transform: none; }
+
+    .day-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 27px;
+      height: 27px;
+      padding: 0 5px;
+      border-radius: 999px;
+      font-size: .9rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .day-events {
+      display: grid;
+      gap: 5px;
+    }
+
+    .event-mini {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      padding: 5px 6px;
+      border-radius: 9px;
+      background: #fbfbf8;
+      border: 1px solid #edf0ec;
+    }
+
+    .event-mini-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: .76rem;
+      font-weight: 650;
+      color: #465148;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: 0 0 9px;
+    }
+
+    .dot-green { background: #5c9565; }
+    .dot-yellow { background: #d3a62e; }
+    .dot-red { background: #bd5e59; }
+    .dot-gray { background: #9aa39d; }
+
+    .mobile-dots {
+      display: none;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      min-height: 9px;
+    }
+
+    /* ---------- Details ---------- */
+
+    .event-panel {
+      margin-top: 20px;
+      padding: 22px;
+      scroll-margin-top: 110px;
+    }
+
+    .event-panel-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .event-panel-heading h2 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .event-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .event-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: #fbfbf8;
+    }
+
+    .event-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .event-card-title {
+      display: grid;
+      gap: 7px;
+    }
+
+    .event-card-title h3 {
+      margin: 0;
+      font-size: 1.12rem;
+    }
+
+    .event-time {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .availability-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .84rem;
+      font-weight: 750;
+      background: var(--accent-soft);
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .availability-badge.warning {
+      background: var(--warning-soft);
+      color: #8b6a18;
+    }
+
+    .availability-badge.full {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .availability-badge.closed {
+      background: var(--neutral-soft);
+      color: #68716b;
+    }
+
+    .event-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 18px;
+      margin: 16px 0;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .event-meta-item {
+      min-width: 0;
+    }
+
+    .meta-label {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+      margin-bottom: 1px;
+    }
+
+    .event-description {
+      white-space: pre-line;
+      margin: 0 0 16px;
+      color: #465148;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .btn.disabled {
+      opacity: .52;
+      pointer-events: none;
+    }
+
+    .empty-message {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .message.error {
+      display: block;
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    /* ---------- Footer ---------- */
+
+    footer {
+      padding: 24px 0 48px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ---------- Responsive ---------- */
+
+    @media (max-width: 820px) {
+      .hero {
+        padding: 42px 0 22px;
+      }
+
+      .hero-box {
+        padding: 28px 22px;
+      }
+
+      .calendar-header {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .calendar-title {
+        grid-row: 1;
+      }
+
+      .calendar-controls,
+      .calendar-controls.end {
+        justify-content: center;
+      }
+
+      .calendar-controls.end {
+        display: none;
+      }
+
+      .calendar-controls.main {
+        grid-row: 2;
+      }
+
+      .calendar-shell,
+      .event-panel {
+        padding: 16px;
+      }
+
+      .calendar-grid {
+        gap: 5px;
+      }
+
+      .day {
+        min-height: 78px;
+        padding: 7px;
+        border-radius: 12px;
+      }
+
+      .day.selected { padding: 6px; }
+
+      .event-mini {
+        padding: 4px 5px;
+      }
+
+      .event-mini-title {
+        font-size: .7rem;
+      }
+
+      .event-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-inner {
+        display: block;
+        padding: 10px 0 8px;
+      }
+
+      .brand {
+        display: block;
+        font-size: .96rem;
+        margin-bottom: 6px;
+      }
+
+      .menu {
+        width: 100%;
+        gap: 18px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        font-size: .88rem;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .menu::-webkit-scrollbar { display: none; }
+
+      .hero {
+        padding-top: 30px;
+      }
+
+      h1 {
+        font-size: clamp(1.9rem, 9vw, 2.4rem);
+      }
+
+      .guide-card {
+        padding: 16px;
+      }
+
+      .legend-groups {
+        display: grid;
+        gap: 14px;
+      }
+
+      .calendar-shell {
+        padding: 10px;
+        border-radius: 18px;
+      }
+
+      .calendar-grid {
+        gap: 3px;
+      }
+
+      .weekday {
+        font-size: .76rem;
+        padding-bottom: 6px;
+      }
+
+      .day {
+        min-height: 56px;
+        padding: 5px 3px;
+        border-radius: 9px;
+        text-align: center;
+      }
+
+      .day.selected {
+        padding: 4px 2px;
+        box-shadow: 0 0 0 2px var(--accent-soft);
+      }
+
+      .day-number {
+        min-width: 23px;
+        height: 23px;
+        font-size: .78rem;
+        padding: 0 4px;
+        margin-bottom: 1px;
+      }
+
+      .event-mini {
+        display: none;
+      }
+
+      .mobile-dots {
+        display: flex;
+        justify-content: center;
+      }
+
+      .mobile-dots .status-dot {
+        width: 7px;
+        height: 7px;
+        flex-basis: 7px;
+      }
+
+      .event-panel {
+        margin-top: 14px;
+        padding: 17px;
+        scroll-margin-top: 100px;
+      }
+
+      .event-card {
+        padding: 15px;
+      }
+
+      .event-card-head {
+        display: grid;
+        gap: 10px;
+      }
+
+      .availability-badge {
+        width: fit-content;
+      }
+
+      .control-btn {
+        padding: 8px 12px;
+        font-size: .9rem;
+      }
+
+      .footer-inner {
+        display: grid;
+      }
+    }
   </style>
 </head>
+
 <body>
-<nav class="nav"><div class="wrap nav-inner"><div class="brand">瑋瑋老師的撒野記事錄</div><div class="menu">
-<a href="https://weiweipaigu.github.io/home/">Home</a>
-<a href="https://weiweipaigu.github.io/calendar/">Calendar</a>
-<a href="https://weiweipaigu.github.io/shopping/">Shopping</a>
-<a href="https://weiweipaigu.github.io/about/">About</a>
-</div></div></nav>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">瑋瑋老師的撒野記事錄</div>
+      <div class="menu" aria-label="主選單">
+        <a href="https://www.weiweipaigu.com">Home</a>
+        <a href="https://calendar.weiweipaigu.com" aria-current="page">Calendar</a>
+        <a href="https://shopping.weiweipaigu.com">Shopping</a>
+        <a href="https://about.weiweipaigu.com">About</a>
+      </div>
+    </div>
+  </nav>
 
-<header class="hero"><div class="wrap"><div class="hero-box">
-<h1>行事曆 / Calendar</h1>
-<p class="lead">這裡整理近期課程、活動與導覽資訊。活動資料與剩餘名額會直接由報名系統同步。</p>
-<div class="note">☆ 上午活動　★ 下午活動　✪ 夜間活動</div>
-</div></div></header>
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-box">
+        <h1>活動行事曆 / Calendar</h1>
+        <p class="lead">公開活動、近期場次與剩餘名額都整理在這裡。挑一個有空的日子，一起出去撒野吧！</p>
 
-<main><section class="calendar-section"><div class="wrap">
-<div id="loadError" class="message error"></div>
-<div class="calendar-header">
-<div class="calendar-controls"><button onclick="changeMonth(-1)">&lt; 上月</button><button onclick="changeMonth(1)">下月 &gt;</button></div>
-<h2 class="calendar-title" id="calendar-title"></h2>
-</div>
-<div class="calendar-shell"><div class="calendar-container">
-<div class="calendar-grid" id="calendar-weekdays"></div>
-<div class="calendar-grid" id="calendar-days"></div>
-</div></div>
-<section class="event-panel">
-<h2 id="event-panel-title">點擊日期查看活動</h2>
-<div class="event-list" id="event-list"></div>
-<p class="empty-message" id="event-empty-message">尚未選擇日期</p>
-</section>
-</div></section></main>
+        <section class="guide-card" aria-labelledby="guide-title">
+          <h2 id="guide-title">行事曆怎麼看？</h2>
+          <p>點選有活動的日期後，頁面會自動帶你到下方的活動詳情，可查看時間、地點、剩餘名額、活動說明與收費提示。</p>
+          <p>有公開名額的場次請直接透過本站報名系統完成報名；若有人數、包團或其他特殊需求，歡迎直接私訊粉絲頁與我聯絡。</p>
+          <p>每一場活動的內容與收費方式都可能不同，實際收費標準請詳閱該場活動的詳細說明。</p>
 
-<footer><div class="wrap">© 2026 瑋瑋老師的撒野記事錄 · Calendar Page</div></footer>
+          <div class="legend-groups">
+            <div class="legend-group">
+              <div class="legend-title">活動分類</div>
+              <div class="legend-row">
+                <span class="type-chip type-family">日間親子活動</span>
+                <span class="type-chip type-night">夜間觀察活動</span>
+                <span class="type-chip type-special">社群特別活動</span>
+              </div>
+            </div>
 
-<script>
-const SUPABASE_URL="https://aexhjnpskprtvpqbxriy.supabase.co";
-const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
-const client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let eventsByDate={},currentDate=new Date(),selectedDate=null;
+            <div class="legend-group">
+              <div class="legend-title">剩餘名額</div>
+              <div class="legend-row">
+                <span class="legend-item"><span class="status-dot dot-green"></span>7 位以上</span>
+                <span class="legend-item"><span class="status-dot dot-yellow"></span>1–6 位</span>
+                <span class="legend-item"><span class="status-dot dot-red"></span>已額滿</span>
+                <span class="legend-item"><span class="status-dot dot-gray"></span>尚未開放／已關閉</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </header>
 
-function dateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function displayDate(s){const [y,m,d]=s.split('-');return `${y} 年 ${Number(m)} 月 ${Number(d)} 日 活動`}
-function timeText(s){return s?s.slice(0,5):""}
-function iconFor(s){if(!s)return'★';const h=Number(s.slice(0,2));return h<12?'☆':h>=17?'✪':'★'}
+  <main>
+    <section class="calendar-section">
+      <div class="wrap">
+        <div id="loadError" class="message error"></div>
 
-async function loadEvents(){
-  const {data,error}=await client.from('events').select('id,title,event_date,start_time,end_time,location,description,capacity,price,status').neq('status','archived').order('event_date').order('start_time');
-  if(error){const el=document.getElementById('loadError');el.textContent='活動資訊讀取失敗，請稍後再試。';el.style.display='block';console.error(error);return}
-  const enriched=[];
-  for(const event of data||[]){
-    const {data:pub}=await client.rpc('get_event_public',{p_event_id:event.id});
-    enriched.push(pub&&pub[0]?pub[0]:{...event,registered:0,remaining:event.capacity});
-  }
-  eventsByDate={};
-  for(const e of enriched){(eventsByDate[e.event_date]??=[]).push(e)}
-  renderWeekdays();renderCalendar(currentDate.getFullYear(),currentDate.getMonth());
-  const today=dateKey(new Date());eventsByDate[today]?showEvents(today):setEmpty('請點擊日期查看活動');
-}
+        <div class="calendar-header">
+          <div class="calendar-controls main">
+            <button class="control-btn" type="button" onclick="changeMonth(-1)">← 上月</button>
+            <button class="control-btn" type="button" onclick="goToday()">今天</button>
+            <button class="control-btn" type="button" onclick="changeMonth(1)">下月 →</button>
+          </div>
 
-function renderWeekdays(){
-  const c=document.getElementById('calendar-weekdays');c.innerHTML='';
-  ['日','一','二','三','四','五','六'].forEach(x=>{const d=document.createElement('div');d.className='weekday';d.textContent=x;c.appendChild(d)})
-}
+          <h2 class="calendar-title" id="calendar-title"></h2>
 
-function renderCalendar(year,month){
-  document.getElementById('calendar-title').textContent=`${year} 年 ${month+1} 月行事曆`;
-  const c=document.getElementById('calendar-days');c.innerHTML='';
-  const first=new Date(year,month,1),last=new Date(year,month+1,0);
-  for(let i=0;i<first.getDay();i++){const e=document.createElement('div');e.className='day empty';c.appendChild(e)}
-  for(let day=1;day<=last.getDate();day++){
-    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const box=document.createElement('div');box.className='day';box.dataset.date=ds;box.onclick=()=>showEvents(ds);
-    if(selectedDate===ds)box.classList.add('selected');
-    const n=document.createElement('div');n.className='day-number';n.textContent=`${month+1}/${day}`;box.appendChild(n);
-    for(const e of eventsByDate[ds]||[]){
-      const mini=document.createElement('div');mini.className='event-mini';
-      mini.onclick=ev=>{ev.stopPropagation();showEvents(ds)};
-      mini.innerHTML=`<div class="event-mini-title">${iconFor(e.start_time)} ${e.title}</div><div class="event-mini-meta">${timeText(e.start_time)}${e.start_time?'｜':''}${e.status!=='open'?'未開放':Number(e.remaining)<=0?'已額滿':`剩 ${e.remaining} 名`}</div>`;
-      box.appendChild(mini);
+          <div class="calendar-controls end" aria-hidden="true"></div>
+        </div>
+
+        <div class="calendar-shell">
+          <div class="calendar-grid" id="calendar-weekdays"></div>
+          <div class="calendar-grid" id="calendar-days"></div>
+        </div>
+
+        <section class="event-panel" id="eventPanel">
+          <div class="event-panel-heading">
+            <h2 id="event-panel-title">點擊日期查看活動</h2>
+          </div>
+          <div class="event-list" id="event-list"></div>
+          <p class="empty-message" id="event-empty-message">尚未選擇日期</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div>© 2026 瑋瑋老師的撒野記事錄 · Calendar</div>
+      <div class="footer-links" aria-label="Legal">
+        <a href="https://privacy.weiweipaigu.com">隱私權政策</a>
+        <a href="https://terms.weiweipaigu.com">服務條款</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://aexhjnpskprtvpqbxriy.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFleGhqbnBza3BydHZwcWJ4cml5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzExMjEsImV4cCI6MjEwMTkwNzEyMX0.sMiJ1m8BptiVgCjK43-3cXNLzDto49T8vsNt3ulDNmU";
+
+    let client;
+    let eventsByDate = {};
+    let currentDate = new Date();
+    let selectedDate = null;
+
+    const TYPE_MAP = {
+      family_day: { label: "日間親子活動", className: "type-family" },
+      night: { label: "夜間觀察活動", className: "type-night" },
+      special: { label: "社群特別活動", className: "type-special" }
+    };
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
-    c.appendChild(box);
-  }
-}
 
-function changeMonth(offset){currentDate.setMonth(currentDate.getMonth()+offset);selectedDate=null;renderCalendar(currentDate.getFullYear(),currentDate.getMonth());resetPanel()}
-function resetPanel(){document.getElementById('event-panel-title').textContent='點擊日期查看活動';document.getElementById('event-list').innerHTML='';setEmpty('尚未選擇日期')}
-function setEmpty(msg){const el=document.getElementById('event-empty-message');el.textContent=msg;el.style.display=msg?'block':'none'}
+    function dateKey(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
 
-function showEvents(ds){
-  selectedDate=ds;document.querySelectorAll('.day').forEach(x=>{if(x.dataset.date)x.classList.toggle('selected',x.dataset.date===ds)});
-  const list=document.getElementById('event-list'),events=eventsByDate[ds]||[];document.getElementById('event-panel-title').textContent=displayDate(ds);list.innerHTML='';
-  if(!events.length){setEmpty('此日期沒有活動，歡迎選擇其他日期');return} setEmpty('');
-  for(const e of events){
-    const closed=e.status!=='open',full=Number(e.remaining)<=0,start=timeText(e.start_time),end=timeText(e.end_time);
-    const card=document.createElement('article');card.className='event-card';
-    card.innerHTML=`
-      <div class="event-card-head">
-        <div><h3>${iconFor(e.start_time)} ${e.title}</h3><div class="lead">${start&&end?`${start}–${end}`:(start||end||'時間未定')}</div></div>
-        <span class="badge${closed||full?' full':''}">${closed?'目前未開放報名':full?'已額滿':`剩餘 ${e.remaining} / ${e.capacity} 名`}</span>
-      </div>
-      <div class="event-meta">
-        <div><span class="meta-label">地點</span>${e.location||'未提供'}</div>
-        <div><span class="meta-label">費用</span>${Number(e.price)>0?`NT$ ${Number(e.price).toLocaleString('zh-TW')}`:'請依活動說明'}</div>
-      </div>
-      ${e.description?`<p class="event-description">${e.description}</p>`:''}
-      <a class="btn${closed||full?' disabled':''}" href="https://weiweipaigu.github.io/booking/?event=${e.id}">${closed?'未開放報名':full?'已額滿':'立即報名'}</a>`;
-    list.appendChild(card);
-  }
-}
-loadEvents();
-</script>
+    function displayDate(s) {
+      const [y, m, d] = s.split("-");
+      const count = (eventsByDate[s] || []).length;
+      return `${y} 年 ${Number(m)} 月 ${Number(d)} 日${count ? `・${count} 場活動` : ""}`;
+    }
+
+    function timeText(s) {
+      return s ? String(s).slice(0, 5) : "";
+    }
+
+    function typeInfo(type) {
+      return TYPE_MAP[type] || { label: "活動", className: "type-unknown" };
+    }
+
+    function availabilityInfo(event) {
+      const remaining = Number(event.remaining ?? 0);
+
+      if (event.status !== "open") {
+        return {
+          dot: "dot-gray",
+          badge: "closed",
+          text: "尚未開放／已關閉"
+        };
+      }
+
+      if (remaining <= 0) {
+        return {
+          dot: "dot-red",
+          badge: "full",
+          text: "已額滿"
+        };
+      }
+
+      if (remaining <= 6) {
+        return {
+          dot: "dot-yellow",
+          badge: "warning",
+          text: `剩餘 ${remaining} 名`
+        };
+      }
+
+      return {
+        dot: "dot-green",
+        badge: "",
+        text: `剩餘 ${remaining} 名`
+      };
+    }
+
+    function feeText(event) {
+      const price = Number(event.price ?? 0);
+      if (price > 0) {
+        return `NT$ ${price.toLocaleString("zh-TW")} 起・詳見活動說明`;
+      }
+      return "詳見活動說明";
+    }
+
+    async function loadEvents() {
+      const { data, error } = await client
+        .from("events")
+        .select("id,title,event_date,start_time,end_time,location,description,capacity,price,status,event_type")
+        .neq("status", "archived")
+        .order("event_date")
+        .order("start_time");
+
+      if (error) {
+        const el = document.getElementById("loadError");
+        el.textContent = "活動資訊讀取失敗，請稍後再試。";
+        el.style.display = "block";
+        console.error(error);
+        return;
+      }
+
+      const enriched = await Promise.all(
+        (data || []).map(async (event) => {
+          const { data: pub, error: pubError } = await client.rpc("get_event_public", {
+            p_event_id: event.id
+          });
+
+          if (pubError) {
+            console.warn("get_event_public failed for event", event.id, pubError);
+          }
+
+          /*
+            先保留 events 資料，再合併 RPC 回傳內容。
+            這樣即使 get_event_public 尚未包含 event_type，新欄位也不會消失。
+          */
+          return {
+            ...event,
+            ...(pub && pub[0] ? pub[0] : {
+              registered: 0,
+              remaining: event.capacity
+            }),
+            event_type: event.event_type
+          };
+        })
+      );
+
+      eventsByDate = {};
+
+      for (const event of enriched) {
+        (eventsByDate[event.event_date] ??= []).push(event);
+      }
+
+      renderWeekdays();
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+
+      const today = dateKey(new Date());
+
+      if (eventsByDate[today]) {
+        showEvents(today, false);
+      } else {
+        resetPanel();
+      }
+    }
+
+    function renderWeekdays() {
+      const container = document.getElementById("calendar-weekdays");
+      container.innerHTML = "";
+
+      ["日", "一", "二", "三", "四", "五", "六"].forEach((weekday) => {
+        const item = document.createElement("div");
+        item.className = "weekday";
+        item.textContent = weekday;
+        container.appendChild(item);
+      });
+    }
+
+    function renderCalendar(year, month) {
+      document.getElementById("calendar-title").textContent = `${year} 年 ${month + 1} 月`;
+
+      const container = document.getElementById("calendar-days");
+      container.innerHTML = "";
+
+      const first = new Date(year, month, 1);
+      const last = new Date(year, month + 1, 0);
+      const today = dateKey(new Date());
+
+      for (let i = 0; i < first.getDay(); i += 1) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        container.appendChild(empty);
+      }
+
+      for (let day = 1; day <= last.getDate(); day += 1) {
+        const ds = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        const events = eventsByDate[ds] || [];
+
+        const box = document.createElement("button");
+        box.type = "button";
+        box.className = "day";
+        box.dataset.date = ds;
+        box.setAttribute(
+          "aria-label",
+          `${month + 1} 月 ${day} 日${events.length ? `，${events.length} 場活動` : "，沒有活動"}`
+        );
+
+        if (selectedDate === ds) box.classList.add("selected");
+        if (today === ds) box.classList.add("today");
+
+        box.addEventListener("click", () => showEvents(ds, true));
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = day;
+        box.appendChild(number);
+
+        const desktopEvents = document.createElement("div");
+        desktopEvents.className = "day-events";
+
+        for (const event of events) {
+          const availability = availabilityInfo(event);
+          const mini = document.createElement("div");
+          mini.className = "event-mini";
+          mini.innerHTML = `
+            <span class="status-dot ${availability.dot}" aria-hidden="true"></span>
+            <span class="event-mini-title">${escapeHTML(event.title)}</span>
+          `;
+          desktopEvents.appendChild(mini);
+        }
+
+        box.appendChild(desktopEvents);
+
+        const mobileDots = document.createElement("div");
+        mobileDots.className = "mobile-dots";
+
+        for (const event of events) {
+          const availability = availabilityInfo(event);
+          const dot = document.createElement("span");
+          dot.className = `status-dot ${availability.dot}`;
+          dot.setAttribute("aria-hidden", "true");
+          mobileDots.appendChild(dot);
+        }
+
+        box.appendChild(mobileDots);
+        container.appendChild(box);
+      }
+    }
+
+    function changeMonth(offset) {
+      currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + offset,
+        1
+      );
+      selectedDate = null;
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      resetPanel();
+    }
+
+    function goToday() {
+      currentDate = new Date();
+      selectedDate = null;
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+
+      const today = dateKey(new Date());
+
+      if (eventsByDate[today]) {
+        showEvents(today, false);
+      } else {
+        resetPanel();
+      }
+    }
+
+    function resetPanel() {
+      document.getElementById("event-panel-title").textContent = "點擊日期查看活動";
+      document.getElementById("event-list").innerHTML = "";
+      setEmpty("尚未選擇日期");
+    }
+
+    function setEmpty(message) {
+      const el = document.getElementById("event-empty-message");
+      el.textContent = message;
+      el.style.display = message ? "block" : "none";
+    }
+
+    function showEvents(ds, shouldScroll = true) {
+      selectedDate = ds;
+
+      document.querySelectorAll(".day").forEach((day) => {
+        if (day.dataset.date) {
+          day.classList.toggle("selected", day.dataset.date === ds);
+        }
+      });
+
+      const list = document.getElementById("event-list");
+      const events = eventsByDate[ds] || [];
+
+      document.getElementById("event-panel-title").textContent = displayDate(ds);
+      list.innerHTML = "";
+
+      if (!events.length) {
+        setEmpty("此日期沒有活動，歡迎選擇其他日期。");
+
+        if (shouldScroll) {
+          document.getElementById("eventPanel").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+        return;
+      }
+
+      setEmpty("");
+
+      for (const event of events) {
+        const availability = availabilityInfo(event);
+        const type = typeInfo(event.event_type);
+        const closed = event.status !== "open";
+        const full = Number(event.remaining ?? 0) <= 0;
+        const start = timeText(event.start_time);
+        const end = timeText(event.end_time);
+
+        const time = start && end
+          ? `${start}–${end}`
+          : (start || end || "時間未定");
+
+        const card = document.createElement("article");
+        card.className = "event-card";
+
+        card.innerHTML = `
+          <div class="event-card-head">
+            <div class="event-card-title">
+              <span class="type-chip ${type.className}">${escapeHTML(type.label)}</span>
+              <div>
+                <h3>${escapeHTML(event.title)}</h3>
+                <div class="event-time">${escapeHTML(time)}</div>
+              </div>
+            </div>
+
+            <span class="availability-badge ${availability.badge}">
+              <span class="status-dot ${availability.dot}" aria-hidden="true"></span>
+              ${escapeHTML(availability.text)}
+            </span>
+          </div>
+
+          <div class="event-meta">
+            <div class="event-meta-item">
+              <span class="meta-label">地點</span>
+              ${escapeHTML(event.location || "未提供")}
+            </div>
+
+            <div class="event-meta-item">
+              <span class="meta-label">費用</span>
+              ${escapeHTML(feeText(event))}
+            </div>
+          </div>
+
+          ${event.description
+            ? `<p class="event-description">${escapeHTML(event.description)}</p>`
+            : `<p class="event-description">詳細活動內容請進入報名頁查看。</p>`
+          }
+
+          <a
+            class="btn${closed || full ? " disabled" : ""}"
+            href="https://booking.weiweipaigu.com/?event=${encodeURIComponent(event.id)}"
+            ${closed || full ? 'aria-disabled="true"' : ""}
+          >
+            ${closed ? "目前未開放報名" : full ? "已額滿" : "立即報名"}
+          </a>
+        `;
+
+        list.appendChild(card);
+      }
+
+      if (shouldScroll) {
+        setTimeout(() => {
+          document.getElementById("eventPanel").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }, 50);
+      }
+    }
+
+    client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    loadEvents();
+  </script>
 </body>
 </html>
