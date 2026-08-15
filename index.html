@@ -249,7 +249,8 @@
     }
 
     .filter-chip[aria-pressed="true"] {
-      box-shadow: 0 0 0 2px rgba(93, 122, 103, .18);
+      box-shadow: 0 0 0 2px rgba(93, 122, 103, .22);
+      opacity: 1;
     }
 
     .filter-chip[aria-pressed="false"] {
@@ -955,13 +956,16 @@
     }
 
     function getFilteredEvents(ds) {
-      const events = getFilteredEvents(ds);
+      const events = eventsByDate[ds] || [];
       if (!activeFilter) return events;
       return events.filter((event) => event.event_type === activeFilter);
     }
 
     function updateFilterUI() {
-      const label = activeFilter ? TYPE_MAP[activeFilter]?.label || "活動" : "全部活動";
+      const label = activeFilter
+        ? (TYPE_MAP[activeFilter]?.label || "活動")
+        : "全部活動";
+
       document.getElementById("filter-status").textContent = `顯示：${label}`;
 
       document.querySelectorAll(".filter-chip").forEach((button) => {
@@ -1230,7 +1234,7 @@
       });
 
       const list = document.getElementById("event-list");
-      const events = eventsByDate[ds] || [];
+      const events = getFilteredEvents(ds);
 
       document.getElementById("event-panel-title").textContent = displayDate(ds);
       list.innerHTML = "";
