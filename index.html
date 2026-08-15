@@ -225,6 +225,63 @@
       border-color: #dfe5e1;
     }
 
+    .filter-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-status {
+      font-size: .82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .filter-chip {
+      appearance: none;
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+
+    .filter-chip:hover {
+      transform: translateY(-1px);
+    }
+
+    .filter-chip[aria-pressed="true"] {
+      box-shadow: 0 0 0 2px rgba(93, 122, 103, .18);
+    }
+
+    .filter-chip[aria-pressed="false"] {
+      opacity: .82;
+    }
+
+    .active-filter-bar {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: -2px 0 14px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .active-filter-bar.show {
+      display: flex;
+    }
+
+    .clear-filter-btn {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-weight: 700;
+      padding: 2px 4px;
+    }
+
     /* ---------- Calendar ---------- */
 
     .calendar-section {
@@ -780,11 +837,14 @@
 
           <div class="legend-groups">
             <div class="legend-group">
-              <div class="legend-title">活動分類</div>
-              <div class="legend-row">
-                <span class="type-chip type-family">日間親子活動</span>
-                <span class="type-chip type-night">夜間觀察活動</span>
-                <span class="type-chip type-special">社群特別活動</span>
+              <div class="filter-title-row">
+                <div class="legend-title">活動分類</div>
+                <div class="filter-status" id="filter-status">顯示：全部活動</div>
+              </div>
+              <div class="legend-row" aria-label="活動分類篩選">
+                <button class="type-chip type-family filter-chip" type="button" data-filter="family_day" aria-pressed="false">日間親子活動</button>
+                <button class="type-chip type-night filter-chip" type="button" data-filter="night" aria-pressed="false">夜間觀察活動</button>
+                <button class="type-chip type-special filter-chip" type="button" data-filter="special" aria-pressed="false">社群特別活動</button>
               </div>
             </div>
 
@@ -818,6 +878,11 @@
           <h2 class="calendar-title" id="calendar-title"></h2>
 
           <div class="calendar-controls end" aria-hidden="true"></div>
+        </div>
+
+        <div class="active-filter-bar" id="active-filter-bar" aria-live="polite">
+          <span id="active-filter-text"></span>
+          <button class="clear-filter-btn" id="clear-filter-btn" type="button">× 清除篩選</button>
         </div>
 
         <div class="calendar-shell">
@@ -854,6 +919,7 @@
     let eventsByDate = {};
     let currentDate = new Date();
     let selectedDate = null;
+    let activeFilter = null;
 
     const TYPE_MAP = {
       family_day: { label: "日間親子活動", className: "type-family" },
@@ -876,7 +942,7 @@
 
     function displayDate(s) {
       const [y, m, d] = s.split("-");
-      const count = (eventsByDate[s] || []).length;
+      const count = getFilteredEvents(s).length;
       return `${y} 年 ${Number(m)} 月 ${Number(d)} 日${count ? `・${count} 場活動` : ""}`;
     }
 
@@ -886,6 +952,51 @@
 
     function typeInfo(type) {
       return TYPE_MAP[type] || { label: "活動", className: "type-unknown" };
+    }
+
+    function getFilteredEvents(ds) {
+      const events = getFilteredEvents(ds);
+      if (!activeFilter) return events;
+      return events.filter((event) => event.event_type === activeFilter);
+    }
+
+    function updateFilterUI() {
+      const label = activeFilter ? TYPE_MAP[activeFilter]?.label || "活動" : "全部活動";
+      document.getElementById("filter-status").textContent = `顯示：${label}`;
+
+      document.querySelectorAll(".filter-chip").forEach((button) => {
+        const isActive = button.dataset.filter === activeFilter;
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      const bar = document.getElementById("active-filter-bar");
+      const barText = document.getElementById("active-filter-text");
+
+      if (activeFilter) {
+        barText.textContent = `目前顯示：${label}`;
+        bar.classList.add("show");
+      } else {
+        barText.textContent = "";
+        bar.classList.remove("show");
+      }
+    }
+
+    function setFilter(filter) {
+      activeFilter = activeFilter === filter ? null : filter;
+      selectedDate = null;
+
+      updateFilterUI();
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      resetPanel();
+    }
+
+    function clearFilter() {
+      activeFilter = null;
+      selectedDate = null;
+
+      updateFilterUI();
+      renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      resetPanel();
     }
 
     function availabilityInfo(event) {
@@ -982,7 +1093,7 @@
 
       const today = dateKey(new Date());
 
-      if (eventsByDate[today]) {
+      if (getFilteredEvents(today).length) {
         showEvents(today, false);
       } else {
         resetPanel();
@@ -1019,7 +1130,7 @@
 
       for (let day = 1; day <= last.getDate(); day += 1) {
         const ds = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        const events = eventsByDate[ds] || [];
+        const events = getFilteredEvents(ds);
 
         const box = document.createElement("button");
         box.type = "button";
@@ -1090,7 +1201,7 @@
 
       const today = dateKey(new Date());
 
-      if (eventsByDate[today]) {
+      if (getFilteredEvents(today).length) {
         showEvents(today, false);
       } else {
         resetPanel();
@@ -1125,7 +1236,12 @@
       list.innerHTML = "";
 
       if (!events.length) {
-        setEmpty("此日期沒有活動，歡迎選擇其他日期。");
+        const filterLabel = activeFilter ? TYPE_MAP[activeFilter]?.label : null;
+        setEmpty(
+          filterLabel
+            ? `此日期沒有「${filterLabel}」，可選擇其他日期或清除篩選。`
+            : "此日期沒有活動，歡迎選擇其他日期。"
+        );
 
         if (shouldScroll) {
           document.getElementById("eventPanel").scrollIntoView({
@@ -1207,6 +1323,14 @@
         }, 50);
       }
     }
+
+    document.querySelectorAll(".filter-chip").forEach((button) => {
+      button.addEventListener("click", () => setFilter(button.dataset.filter));
+    });
+
+    document.getElementById("clear-filter-btn").addEventListener("click", clearFilter);
+
+    updateFilterUI();
 
     client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     loadEvents();
